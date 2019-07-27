@@ -16,11 +16,11 @@ final class ResourceCombineTests: XCTestCase {
 
     func testSuccess() throws {
         try createFile(withContents: "Hello") { url in
-            expect { fulfill in
+            expect { completion in
 
                 cancellable = URLSession.shared
                     .publisher(for: resource(url))
-                    .sink(receiveCompletion: { _ in fulfill() },
+                    .sink(receiveCompletion: { _ in completion() },
                           receiveValue: { XCTAssertEqual($0, "Hello") })
             }
         }
@@ -28,13 +28,13 @@ final class ResourceCombineTests: XCTestCase {
 
     func testFailure() throws {
         try createFile(withContents: "Hello") { base in
-            expect { fulfill in
+            expect { completion in
 
                 let url = base.appendingPathComponent("ThisDoesNotExist")
                 cancellable = URLSession.shared
                     .publisher(for: resource(url))
                     .replaceError(with: "ERROR")
-                    .sink(receiveCompletion: { _ in fulfill() },
+                    .sink(receiveCompletion: { _ in completion() },
                           receiveValue: { XCTAssertEqual($0, "ERROR") })
             }
         }

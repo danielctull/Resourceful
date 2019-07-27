@@ -6,11 +6,11 @@ final class ResourceURLSessionTests: XCTestCase {
 
     func testSuccess() throws {
         try createFile(withContents: "Hello") { url in
-            expect { fulfill in
+            expect { completion in
 
                 URLSession.shared.fetch(resource(url)) { result in
                     XCTAssertEqual(try? result.get(), "Hello")
-                    fulfill()
+                    completion()
                 }
             }
         }
@@ -18,7 +18,7 @@ final class ResourceURLSessionTests: XCTestCase {
 
     func testFailure() throws {
         try createFile(withContents: "Hello") { base in
-            expect { fulfill in
+            expect { completion in
 
                 let url = base.appendingPathComponent("ThisDoesNotExist")
                 URLSession.shared.fetch(resource(url)) { result in
@@ -30,7 +30,7 @@ final class ResourceURLSessionTests: XCTestCase {
                         XCTAssertThrowsError(try result.get())
                     }()
 
-                    fulfill()
+                    completion()
                 }
             }
         }
