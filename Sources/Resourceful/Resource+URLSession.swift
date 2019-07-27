@@ -26,14 +26,13 @@ extension URLSession {
 
     private func perform(
         request: URLRequest,
-        completion: @escaping (Result<(Data, URLResponse), Error>) -> Void
+        completion: @escaping (Result<(Data, URLResponse), URLError>) -> Void
     ) -> URLSessionDataTask {
 
         let task = dataTask(with: request) { (data, response, error) in
 
             guard let data = data, let response = response else {
-                struct UnknownError: Error {}
-                let error = error ?? UnknownError()
+                let error = (error as? URLError) ?? URLError(.unknown)
                 completion(.failure(error))
                 return
             }
