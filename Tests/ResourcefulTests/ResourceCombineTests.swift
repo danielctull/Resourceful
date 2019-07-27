@@ -12,13 +12,16 @@ import Combine
 @available(watchOS 6.0, *)
 final class ResourceCombineTests: XCTestCase {
 
+    private var cancellable: AnyCancellable?
+
     func testSuccess() throws {
         try setup { url in
             expect { fulfill in
 
-                _ = URLSession.shared
+                cancellable = URLSession.shared
                     .publisher(for: resource(url))
-                    .sink { XCTAssertEqual($0, "Hello"); fulfill() }
+                    .sink(receiveCompletion: { _ in fulfill() },
+                          receiveValue: { XCTAssertEqual($0, "Hello") })
             }
         }
     }
@@ -28,10 +31,11 @@ final class ResourceCombineTests: XCTestCase {
             expect { fulfill in
 
                 let url = base.appendingPathComponent("ThisDoesNotExist")
-                _ = URLSession.shared
+                cancellable = URLSession.shared
                     .publisher(for: resource(url))
                     .replaceError(with: "ERROR")
-                    .sink { XCTAssertEqual($0, "ERROR"); fulfill() }
+                    .sink(receiveCompletion: { _ in fulfill() },
+                          receiveValue: { XCTAssertEqual($0, "ERROR") })
             }
         }
     }
