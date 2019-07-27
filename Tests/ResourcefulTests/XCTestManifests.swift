@@ -7,7 +7,7 @@ extension ResourceTests {
     // to regenerate.
     static let __allTests__ResourceTests = [
         ("testInit", testInit),
-        ("testMap", testMap),
+        ("testTryMap", testTryMap),
     ]
 }
 
