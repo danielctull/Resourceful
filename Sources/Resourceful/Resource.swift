@@ -34,7 +34,7 @@ extension Resource {
     /// - Parameter transform: A mapping closure. transform accepts the value
     /// of this resource as its parameter and returns a transformed value.
     /// - Returns: A resource of generic type NewValue.
-    public func map<NewValue>(
+    public func tryMap<NewValue>(
         _ transform: @escaping (Value) throws -> NewValue
     ) -> Resource<NewValue> {
 

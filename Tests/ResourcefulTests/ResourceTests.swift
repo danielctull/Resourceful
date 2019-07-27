@@ -10,9 +10,9 @@ final class ResourceTests: XCTestCase {
         XCTAssertEqual(try resource.transform(response), "Hello")
     }
 
-    func testMap() {
+    func testTryMap() {
         let integer = Resource(request: request) { _ in return 20 }
-        let string = integer.map(String.init)
+        let string = integer.tryMap(String.init)
         XCTAssertEqual(try integer.transform(response), 20)
         XCTAssertEqual(try string.transform(response), "20")
     }
