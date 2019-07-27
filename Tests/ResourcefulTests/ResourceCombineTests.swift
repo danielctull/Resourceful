@@ -15,7 +15,7 @@ final class ResourceCombineTests: XCTestCase {
     private var cancellable: AnyCancellable?
 
     func testSuccess() throws {
-        try setup { url in
+        try createFile(withContents: "Hello") { url in
             expect { fulfill in
 
                 cancellable = URLSession.shared
@@ -27,7 +27,7 @@ final class ResourceCombineTests: XCTestCase {
     }
 
     func testFailure() throws {
-        try setup { base in
+        try createFile(withContents: "Hello") { base in
             expect { fulfill in
 
                 let url = base.appendingPathComponent("ThisDoesNotExist")

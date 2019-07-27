@@ -5,7 +5,7 @@ import XCTest
 final class ResourceURLSessionTests: XCTestCase {
 
     func testSuccess() throws {
-        try setup { url in
+        try createFile(withContents: "Hello") { url in
             expect { fulfill in
 
                 URLSession.shared.fetch(resource(url)) { result in
@@ -17,7 +17,7 @@ final class ResourceURLSessionTests: XCTestCase {
     }
 
     func testFailure() throws {
-        try setup { base in
+        try createFile(withContents: "Hello") { base in
             expect { fulfill in
 
                 let url = base.appendingPathComponent("ThisDoesNotExist")

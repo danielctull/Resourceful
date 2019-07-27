@@ -11,7 +11,7 @@ extension XCTestCase {
     /// string "Hello".
     ///
     /// - Parameter function: A function that is provided with the created file.
-    func setup(function: (URL) -> Void) throws {
+    func createFile(withContents string: String, function: (URL) -> Void) throws {
 
         let fileManager = FileManager()
         let cache = try fileManager.url(for: .cachesDirectory,
@@ -19,7 +19,7 @@ extension XCTestCase {
                                         appropriateFor: nil,
                                         create: true)
         let url = cache.appendingPathComponent(UUID().uuidString)
-        try "Hello".data(using: .utf8)?.write(to: url)
+        try string.data(using: .utf8)?.write(to: url)
 
         function(url)
         try fileManager.removeItem(at: url)
