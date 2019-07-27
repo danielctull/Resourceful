@@ -1,4 +1,5 @@
 test:
   image: swift:latest
   script:
+    - swift --version
     - swift test
