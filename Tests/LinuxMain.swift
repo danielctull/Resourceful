@@ -1,8 +1,8 @@
 import XCTest
 
-import ResourcedTests
+import ResourcefulTests
 
 var tests = [XCTestCaseEntry]()
-tests += ResourcedTests.__allTests()
+tests += ResourcefulTests.__allTests()
 
 XCTMain(tests)

@@ -1,5 +1,5 @@
 
-import Resourced
+import Resourceful
 import XCTest
 
 final class ResourceTests: XCTestCase {

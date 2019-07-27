@@ -1,6 +1,6 @@
 
 import Foundation
-import Resourced
+import Resourceful
 import XCTest
 
 extension XCTestCase {

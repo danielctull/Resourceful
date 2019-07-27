@@ -3,17 +3,17 @@
 import PackageDescription
 
 let package = Package(
-    name: "Resourced",
+    name: "Resourceful",
     products: [
         .library(
-            name: "Resourced",
-            targets: ["Resourced"]),
+            name: "Resourceful",
+            targets: ["Resourceful"]),
     ],
     targets: [
         .target(
-            name: "Resourced"),
+            name: "Resourceful"),
         .testTarget(
-            name: "ResourcedTests",
-            dependencies: ["Resourced"]),
+            name: "ResourcefulTests",
+            dependencies: ["Resourceful"]),
     ]
 )
