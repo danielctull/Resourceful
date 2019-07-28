@@ -19,8 +19,12 @@ extension XCTestCase {
                                         appropriateFor: nil,
                                         create: true)
         let url = cache.appendingPathComponent(UUID().uuidString)
-        try string.data(using: .utf8)?.write(to: url)
+        guard let data = string.data(using: .utf8) else {
+            struct DataError: Error {}
+            throw DataError()
+        }
 
+        try data.write(to: url)
         function(url)
         try fileManager.removeItem(at: url)
     }
@@ -43,5 +47,69 @@ extension XCTestCase {
         return Resource<String>(request: request) {
             String(data: $0.data, encoding: .utf8) ?? ""
         }
+    }
+}
+
+/// Asserts that the given Result is a success.
+///
+/// - Parameter result: The result to evaluate
+/// - Parameter expected: The expected Success value.
+/// - Parameter file: The file in which failure occurred. Defaults to the file
+///                   name of the test case in which this function was called.
+/// - Parameter line: The line number on which failure occurred. Defaults to the
+///                   line number on which this function was called.
+func AssertSuccess<Success: Equatable, Failure>(
+    _ result: Result<Success, Failure>,
+    _ expected: Success,
+    file: StaticString = #file,
+    line: UInt = #line
+) {
+    switch result {
+    case .success(let success):
+        XCTAssertEqual(success, expected, file: file, line: line)
+    case .failure(let failure):
+        XCTFail("Failure: \(failure.localizedDescription)", file: file, line: line)
+    }
+}
+
+/// Asserts that the given Result is a failure.
+///
+/// - Parameter result: The result to evaluate.
+/// - Parameter expected: The expected Failure value.
+/// - Parameter file: The file in which failure occurred. Defaults to the file
+///                   name of the test case in which this function was called.
+/// - Parameter line: The line number on which failure occurred. Defaults to the
+///                   line number on which this function was called.
+func AssertFailure<Success, Failure: Equatable>(
+    _ result: Result<Success, Failure>,
+    _ expected: Failure,
+    file: StaticString = #file,
+    line: UInt = #line
+) {
+    switch result {
+    case .success(let success):
+        XCTFail("Success: \(success)", file: file, line: line)
+    case .failure(let failure):
+        XCTAssertEqual(failure, expected, file: file, line: line)
+    }
+}
+
+/// Asserts that the given Result is a failure.
+///
+/// - Parameter result: The result to evaluate.
+/// - Parameter file: The file in which failure occurred. Defaults to the file
+///                   name of the test case in which this function was called.
+/// - Parameter line: The line number on which failure occurred. Defaults to the
+///                   line number on which this function was called.
+func AssertFailure<Success, Failure>(
+    _ result: Result<Success, Failure>,
+    file: StaticString = #file,
+    line: UInt = #line
+) {
+    switch result {
+    case .success(let success):
+        XCTFail("Success: \(success)", file: file, line: line)
+    case .failure:
+        break
     }
 }
