@@ -21,7 +21,10 @@ final class ResourceTests: XCTestCase {
         XCTAssertEqual(try string.transform(response), "20")
     }
 
+    // swiftlint:disable force_unwrapping
     private var url: URL { return URL(string: "http://example.com")! }
+    // swiftlint:enable force_unwrapping
+
     private var request: URLRequest { return URLRequest(url: url) }
     private var response: (Data, URLResponse) {
         return (Data(), URLResponse(url: url,

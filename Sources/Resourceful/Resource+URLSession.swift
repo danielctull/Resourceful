@@ -33,7 +33,7 @@ extension URLSession {
         completion: @escaping (Result<(Data, URLResponse), URLError>) -> Void
     ) -> URLSessionDataTask {
 
-        let task = dataTask(with: request) { (data, response, error) in
+        let task = dataTask(with: request) { data, response, error in
 
             guard let data = data, let response = response else {
                 let error = (error as? URLError) ?? URLError(.unknown)
