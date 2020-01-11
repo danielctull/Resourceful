@@ -1,6 +1,10 @@
 
 import Foundation
 
+#if canImport(FoundationNetworking)
+import FoundationNetworking
+#endif
+
 /// Represents a value, retrieved from the given request, where the data is
 /// transformed with the given transform function.
 public struct Resource<Value> {

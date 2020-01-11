@@ -1,6 +1,10 @@
 
 import Foundation
 
+#if canImport(FoundationNetworking)
+import FoundationNetworking
+#endif
+
 extension URLSession {
 
     /// Fetches a resource using its request and transforms the returned data

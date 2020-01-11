@@ -2,6 +2,10 @@
 import Resourceful
 import XCTest
 
+#if canImport(FoundationNetworking)
+import FoundationNetworking
+#endif
+
 final class ResourceURLSessionTests: XCTestCase {
 
     func testSuccess() throws {

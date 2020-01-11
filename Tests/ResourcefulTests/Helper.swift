@@ -3,6 +3,10 @@ import Foundation
 import Resourceful
 import XCTest
 
+#if canImport(FoundationNetworking)
+import FoundationNetworking
+#endif
+
 extension XCTestCase {
 
     /// Work around for not having file resources in swift package manager :)
