@@ -4,6 +4,36 @@ on: [push, pull_request]
 
 jobs:
 
+  linux-5_0:
+    name: Linux (Swift 5.0)
+    runs-on: ubuntu-latest
+    container:
+      image: swift:5.0
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v1
+    - name: Swift Version
+      run: swift --version
+    - name: Build
+      run: swift build -v
+    - name: Test
+      run: swift test -v -c release
+
+  linux-5_1:
+    name: Linux (Swift 5.1)
+    runs-on: ubuntu-latest
+    container:
+      image: swift:5.1
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v1
+    - name: Swift Version
+      run: swift --version
+    - name: Build
+      run: swift build -v
+    - name: Test
+      run: swift test -v -c release
+
   macos:
     name: MacOS
     runs-on: macOS-latest
