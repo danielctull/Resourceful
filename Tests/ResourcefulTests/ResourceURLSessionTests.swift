@@ -9,6 +9,8 @@ import FoundationNetworking
 final class ResourceURLSessionTests: XCTestCase {
 
     func testSuccess() throws {
+        // Linux doesn't support file-based URLs that this test uses.
+        #if !os(Linux)
         try createFile(withContents: "Hello") { url in
             expect { completion in
 
@@ -18,9 +20,12 @@ final class ResourceURLSessionTests: XCTestCase {
                 }
             }
         }
+        #endif
     }
 
     func testFailure() throws {
+        // Linux doesn't support file-based URLs that this test uses.
+        #if !os(Linux)
         try createFile(withContents: "Hello") { base in
             expect { completion in
 
@@ -31,5 +36,6 @@ final class ResourceURLSessionTests: XCTestCase {
                 }
             }
         }
+        #endif
     }
 }
