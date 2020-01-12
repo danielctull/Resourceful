@@ -42,8 +42,8 @@ extension Resource {
         _ transform: @escaping (Value) throws -> NewValue
     ) -> Resource<NewValue> {
 
-        return Resource<NewValue>(request: request) {
-            return try transform(self.transform($0))
+        return Resource<NewValue>(request: request) { response in
+            try transform(self.transform(response))
         }
     }
 }
