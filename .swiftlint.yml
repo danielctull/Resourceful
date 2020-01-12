@@ -8,6 +8,7 @@ disabled_rules:
   - leading_whitespace
   - line_length
   - nesting
+  - opening_brace
   - trailing_comma
 opt_in_rules:
   - array_init
