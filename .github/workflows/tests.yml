@@ -4,35 +4,27 @@ on: [push, pull_request]
 
 jobs:
 
-  linux-5_0:
-    name: Linux (Swift 5.0)
+  linux:
+    strategy:
+      matrix:
+        swift: ["5.0", "5.1"]
+    name: Linux Swift Image
     runs-on: ubuntu-latest
     container:
-      image: swift:5.0
+      image: swift:${{ matrix.swift }}
     steps:
     - name: Checkout
       uses: actions/checkout@v1
     - name: Swift Version
       run: swift --version
-    - name: Build
-      run: swift build -v
-    - name: Test
+    - name: Release Build
+      run: swift build -v -c release
+    - name: Release Test
       run: swift test -v -c release
-
-  linux-5_1:
-    name: Linux (Swift 5.1)
-    runs-on: ubuntu-latest
-    container:
-      image: swift:5.1
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v1
-    - name: Swift Version
-      run: swift --version
-    - name: Build
-      run: swift build -v
-    - name: Test
-      run: swift test -v -c release
+    - name: Debug Build
+      run: swift build -v -c debug
+    - name: Debug Test
+      run: swift test -v -c debug
 
   macos:
     name: MacOS
@@ -42,7 +34,11 @@ jobs:
       uses: actions/checkout@v1
     - name: Swift Version
       run: swift --version
-    - name: Build
-      run: swift build -v
-    - name: Test
+    - name: Release Build
+      run: swift build -v -c release
+    - name: Release Test
       run: swift test -v -c release
+    - name: Debug Build
+      run: swift build -v -c debug
+    - name: Debug Test
+      run: swift test -v -c debug
