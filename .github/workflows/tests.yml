@@ -1,17 +1,19 @@
 name: tests
 
-on: [push, pull_request]
+on:
+  - push
+  - pull_request
 
 jobs:
 
   linux:
     strategy:
       matrix:
-        swift: ["5.0", "5.1"]
-    name: Linux Swift Image
+        image: ["swift:5.0", "swift:5.1"]
+    name: Linux
     runs-on: ubuntu-latest
     container:
-      image: swift:${{ matrix.swift }}
+      image: ${{ matrix.image }}
     steps:
     - name: Checkout
       uses: actions/checkout@v1
@@ -28,7 +30,7 @@ jobs:
 
   macos:
     name: MacOS
-    runs-on: macOS-latest
+    runs-on: macos-latest
     steps:
     - name: Checkout
       uses: actions/checkout@v1
