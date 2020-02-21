@@ -10,7 +10,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        image: ["swift:5.0", "swift:5.1"]
+        image: 
+          - "swift:5.0"
+          - "swift:5.1"
     name: Linux
     runs-on: ubuntu-latest
     container:
