@@ -11,11 +11,13 @@ jobs:
   documentation:
     runs-on: ubuntu-latest
     steps:
+      - name: Install libxml2
+        run: apt-get install libxml2-dev
       - uses: actions/checkout@v1
       - name: Generate Documentation
         uses: SwiftDocOrg/swift-doc@master
         with:
-          inputs: "Source"
+          inputs: "Sources"
           output: "Documentation"
       - name: Upload Documentation to Wiki
         uses: SwiftDocOrg/github-wiki-publish-action@v1
