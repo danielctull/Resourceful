@@ -12,17 +12,20 @@ extension URLSession {
     ///
     /// - Parameters:
     ///   - resource: The resource to fetch.
+    ///   - callbackQueue: The queue to call the completion handler on. Defaults
+    ///                    to `DispatchQueue.main`.
     ///   - completion: Completion handler with the result.
     @discardableResult
     public func fetch<Value>(
         _ resource: Resource<Value>,
+        callbackQueue queue: DispatchQueue = .main,
         completion: @escaping (Result<Value, Error>) -> Void
     ) -> URLSessionDataTask {
 
         return perform(request: resource.request) { result in
 
             let value = Result { try resource.transform(result.get()) }
-            DispatchQueue.main.async {
+            queue.async {
                 completion(value)
             }
         }
