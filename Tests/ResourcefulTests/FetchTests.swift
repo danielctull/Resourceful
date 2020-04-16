@@ -6,7 +6,7 @@ import XCTest
 import FoundationNetworking
 #endif
 
-final class ResourceURLSessionTests: XCTestCase {
+final class FetchTests: XCTestCase {
 
     func testSuccess() throws {
         // Linux doesn't support file-based URLs that this test uses.
