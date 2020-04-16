@@ -3,8 +3,8 @@ import Resourceful
 import XCTest
 
 #if canImport(Combine)
-
 import Combine
+#endif
 
 @available(iOS 13.0, *)
 @available(OSX 10.15, *)
@@ -12,6 +12,7 @@ import Combine
 @available(watchOS 6.0, *)
 final class CombineTests: XCTestCase {
 
+    #if canImport(Combine)
     private var cancellable: AnyCancellable?
 
     func testSuccess() throws {
@@ -39,6 +40,5 @@ final class CombineTests: XCTestCase {
             }
         }
     }
+    #endif
 }
-
-#endif
