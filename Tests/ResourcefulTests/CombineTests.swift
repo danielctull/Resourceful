@@ -10,7 +10,7 @@ import Combine
 @available(OSX 10.15, *)
 @available(tvOS 13.0, *)
 @available(watchOS 6.0, *)
-final class ResourceCombineTests: XCTestCase {
+final class CombineTests: XCTestCase {
 
     private var cancellable: AnyCancellable?
 
