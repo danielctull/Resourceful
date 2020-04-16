@@ -14,8 +14,10 @@ final class CombineTests: XCTestCase {
 
     #if canImport(Combine)
     private var cancellable: AnyCancellable?
+    #endif
 
     func testSuccess() throws {
+        #if canImport(Combine)
         try createFile(withContents: "Hello") { url in
             expect { completion in
 
@@ -25,9 +27,11 @@ final class CombineTests: XCTestCase {
                           receiveValue: { XCTAssertEqual($0, "Hello") })
             }
         }
+        #endif
     }
 
     func testFailure() throws {
+        #if canImport(Combine)
         try createFile(withContents: "Hello") { base in
             expect { completion in
 
@@ -39,6 +43,6 @@ final class CombineTests: XCTestCase {
                           receiveValue: { XCTAssertEqual($0, "ERROR") })
             }
         }
+        #endif
     }
-    #endif
 }
