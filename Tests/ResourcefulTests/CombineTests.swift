@@ -30,6 +30,19 @@ final class CombineTests: XCTestCase {
         #endif
     }
 
+    func testRequestFailure() throws {
+        #if canImport(Combine)
+        expect { completion in
+
+            cancellable = URLSession.shared
+                .publisher(for: failingRequestResource)
+                .replaceError(with: "ERROR")
+                .sink(receiveCompletion: { _ in completion() },
+                      receiveValue: { XCTAssertEqual($0, "ERROR") })
+        }
+        #endif
+    }
+
     func testFailure() throws {
         #if canImport(Combine)
         try createFile(withContents: "Hello") { base in

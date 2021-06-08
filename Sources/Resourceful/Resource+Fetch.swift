@@ -22,12 +22,19 @@ extension URLSession {
         completion: @escaping (Result<Value, Error>) -> Void
     ) -> URLSessionDataTask {
 
-        return perform(request: resource.request) { result in
-
-            let value = Result { try resource.transform(result.get()) }
-            queue.async {
-                completion(value)
+        do {
+            let request = try resource.makeRequest()
+            return perform(request: request) { result in
+                let value = Result { try resource.transform(result.get()) }
+                queue.async {
+                    completion(value)
+                }
             }
+        } catch {
+            queue.async {
+                completion(.failure(error))
+            }
+            return URLSessionDataTask()
         }
     }
 

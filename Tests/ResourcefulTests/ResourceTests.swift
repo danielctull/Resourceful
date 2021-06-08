@@ -8,9 +8,9 @@ import FoundationNetworking
 
 final class ResourceTests: XCTestCase {
 
-    func testInit() {
+    func testInit() throws {
         let resource = Resource(request: request) { _ in return "Hello" }
-        XCTAssertEqual(resource.request, request)
+        XCTAssertEqual(try resource.makeRequest(), request)
         XCTAssertEqual(try resource.transform(response), "Hello")
     }
 

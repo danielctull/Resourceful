@@ -23,6 +23,18 @@ final class FetchTests: XCTestCase {
         #endif
     }
 
+    func testRequestFailure() throws {
+        // Linux doesn't support file-based URLs that this test uses.
+        #if !os(Linux)
+        expect { completion in
+            URLSession.shared.fetch(failingRequestResource) { result in
+                AssertFailure(result)
+                completion()
+            }
+        }
+        #endif
+    }
+
     func testFailure() throws {
         // Linux doesn't support file-based URLs that this test uses.
         #if !os(Linux)

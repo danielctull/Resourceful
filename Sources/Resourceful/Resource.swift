@@ -12,7 +12,11 @@ public struct Resource<Value> {
     public typealias Response = (data: Data, response: URLResponse)
 
     /// A request used to fetch the data.
-    public let request: URLRequest
+    @available(*, deprecated, message: "Use makeRequest() instead.")
+    public var request: URLRequest { return try! makeRequest() }
+
+    /// Makes the request for the resource.
+    public let makeRequest: () throws -> URLRequest
 
     /// Transforms the network response into the desired value.
     public let transform: (Response) throws -> Value
@@ -25,7 +29,22 @@ public struct Resource<Value> {
     ///   - transform: Used to transform the response into the desired value.
     public init(request: URLRequest,
                 transform: @escaping (Response) throws -> Value) {
-        self.request = request
+        self.init(makeRequest: { request }, transform: transform)
+    }
+
+    /// Creates a resource located with the request and transformed from data
+    /// using the given transform.
+    ///
+    /// Any failures from the makeRequest or transform functions will be
+    /// surfaced when performing the network request using the fetch or
+    /// publisher methods on URLSession.
+    ///
+    /// - Parameters:
+    ///   - makeRequest: Used to create a request for this resource.
+    ///   - transform: Used to transform the response into the desired value.
+    public init(makeRequest: @escaping () throws -> URLRequest,
+                transform: @escaping (Response) throws -> Value) {
+        self.makeRequest = makeRequest
         self.transform = transform
     }
 }
@@ -42,7 +61,7 @@ extension Resource {
         _ transform: @escaping (Value) throws -> NewValue
     ) -> Resource<NewValue> {
 
-        return Resource<NewValue>(request: request) { response in
+        return Resource<NewValue>(makeRequest: makeRequest) { response in
             try transform(self.transform(response))
         }
     }

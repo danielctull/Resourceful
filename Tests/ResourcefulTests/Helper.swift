@@ -52,6 +52,16 @@ extension XCTestCase {
             String(data: $0.data, encoding: .utf8) ?? ""
         }
     }
+
+    /// A resource which fails to make its request.
+    ///
+    /// - Parameter url: The location of the data.
+    var failingRequestResource: Resource<String> {
+        struct TestError: Error {}
+        return Resource<String>(makeRequest: { throw TestError() }, transform: {
+            String(data: $0.data, encoding: .utf8) ?? ""
+        })
+    }
 }
 
 /// Asserts that the given Result is a success.

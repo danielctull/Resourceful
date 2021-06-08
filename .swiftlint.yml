@@ -4,6 +4,7 @@ excluded:
   - .**/XCTestManifests.swift
 disabled_rules:
   - cyclomatic_complexity
+  - force_try
   - identifier_name
   - leading_whitespace
   - line_length
