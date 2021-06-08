@@ -7,6 +7,7 @@ extension CombineTests {
     // to regenerate.
     static let __allTests__CombineTests = [
         ("testFailure", testFailure),
+        ("testRequestFailure", testRequestFailure),
         ("testSuccess", testSuccess),
     ]
 }
@@ -17,6 +18,7 @@ extension FetchTests {
     // to regenerate.
     static let __allTests__FetchTests = [
         ("testFailure", testFailure),
+        ("testRequestFailure", testRequestFailure),
         ("testSuccess", testSuccess),
     ]
 }
