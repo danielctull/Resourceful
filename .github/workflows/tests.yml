@@ -15,6 +15,7 @@ jobs:
           - "swift:5.1"
           - "swift:5.2"
           - "swift:5.3"
+          - "swift:5.4"
     name: Linux
     runs-on: ubuntu-latest
     container:
