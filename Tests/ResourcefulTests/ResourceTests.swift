@@ -22,6 +22,12 @@ final class ResourceTests: XCTestCase {
         XCTAssertEqual(try resource.makeRequest().url, url.appendingPathComponent("test"))
     }
 
+    func testModifyRequest() {
+        let resource = Resource(request: request) { _ in return 20 }
+            .modifyRequest { $0.url?.appendPathComponent("test") }
+        XCTAssertEqual(try resource.makeRequest().url, url.appendingPathComponent("test"))
+    }
+
     func testTryMap() {
         let integer = Resource(request: request) { _ in return 20 }
         let string = integer.tryMap(String.init)
