@@ -65,4 +65,12 @@ extension Resource {
             try transform(self.transform(response))
         }
     }
+
+    public func mapRequest(
+        _ modify: @escaping (URLRequest) throws -> URLRequest
+    ) -> Resource {
+        return Resource(
+            makeRequest: { try modify(self.makeRequest()) },
+            transform: transform)
+    }
 }
