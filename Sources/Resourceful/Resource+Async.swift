@@ -5,7 +5,7 @@ import Foundation
 import FoundationNetworking
 #endif
 
-#if swift(>=5.5) && !os(Linux) // Linux doesn't have async URLSession API yet.
+#if swift(>=5.5)
 
 @available(iOS 13.0, *)
 @available(OSX 10.15, *)

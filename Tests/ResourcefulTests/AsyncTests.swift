@@ -3,6 +3,8 @@ import Foundation
 import Resourceful
 import XCTest
 
+#if swift(>=5.5)
+
 @available(iOS 13.0, *)
 @available(OSX 10.15, *)
 @available(tvOS 13.0, *)
@@ -59,3 +61,5 @@ final class AsyncTests: XCTestCase {
         #endif
     }
 }
+
+#endif
