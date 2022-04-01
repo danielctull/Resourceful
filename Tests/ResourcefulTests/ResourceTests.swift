@@ -30,7 +30,7 @@ final class ResourceTests: XCTestCase {
 
     func testTryMap() {
         let integer = Resource(request: request) { _ in return 20 }
-        let string = integer.tryMap(String.init)
+        let string = integer.tryMap { String($0) }
         XCTAssertEqual(try integer.transform(response), 20)
         XCTAssertEqual(try string.transform(response), "20")
     }
