@@ -7,10 +7,10 @@ import FoundationNetworking
 
 #if swift(>=5.5) && !os(Linux) // Linux doesn't have async URLSession API yet.
 
-@available(iOS 15.0, *)
-@available(OSX 12, *)
-@available(tvOS 15.0, *)
-@available(watchOS 8.0, *)
+@available(iOS 13.0, *)
+@available(OSX 10.15, *)
+@available(tvOS 13.0, *)
+@available(watchOS 6.0, *)
 extension URLSession {
 
     /// Asynchronously retrieves the value of the resource.
@@ -18,9 +18,9 @@ extension URLSession {
     /// - Parameter resource: The resource to fetch.
     /// - Returns: The value of the resource.
     public func value<Value>(for resource: Resource<Value>) async throws -> Value {
-        let request = try resource.makeRequest()
-        let response = try await data(for: request)
-        return try resource.transform(response)
+        try await withUnsafeThrowingContinuation { continuation in
+            fetch(resource, completion: continuation.resume)
+        }
     }
 }
 

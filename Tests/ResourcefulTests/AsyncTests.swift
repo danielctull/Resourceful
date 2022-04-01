@@ -3,12 +3,10 @@ import Foundation
 import Resourceful
 import XCTest
 
-#if swift(>=5.5) && !os(Linux) // Linux doesn't have async URLSession API yet.
-
-@available(iOS 15.0, *)
-@available(OSX 12, *)
-@available(tvOS 15.0, *)
-@available(watchOS 8.0, *)
+@available(iOS 13.0, *)
+@available(OSX 10.15, *)
+@available(tvOS 13.0, *)
+@available(watchOS 6.0, *)
 final class AsyncTests: XCTestCase {
 
     func testSuccess() async throws {
@@ -61,5 +59,3 @@ final class AsyncTests: XCTestCase {
         #endif
     }
 }
-
-#endif
