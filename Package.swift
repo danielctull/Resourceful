@@ -10,8 +10,14 @@ let package = Package(
             targets: ["Resourceful"]),
     ],
     targets: [
+
         .target(
-            name: "Resourceful"),
+            name: "Resourceful",
+            swiftSettings: [
+                .unsafeFlags(["-Xfrontend", "-strict-concurrency=complete"]),
+            ]
+        ),
+
         .testTarget(
             name: "ResourcefulTests",
             dependencies: ["Resourceful"]),
