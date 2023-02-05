@@ -7,7 +7,7 @@ import FoundationNetworking
 
 /// Represents a value, retrieved from the given request, where the data is
 /// transformed with the given transform function.
-public struct Resource<Value> {
+public struct Resource<Value>: Sendable {
 
     public typealias Response = (data: Data, response: URLResponse)
 
@@ -16,10 +16,10 @@ public struct Resource<Value> {
     public var request: URLRequest { return try! makeRequest() }
 
     /// Makes the request for the resource.
-    public let makeRequest: () throws -> URLRequest
+    public let makeRequest: @Sendable () throws -> URLRequest
 
     /// Transforms the network response into the desired value.
-    public let transform: (Response) throws -> Value
+    public let transform: @Sendable (Response) throws -> Value
 
     /// Creates a resource located with the request and transformed from data
     /// using the given transform.
@@ -28,7 +28,7 @@ public struct Resource<Value> {
     ///   - request: A request for this resource.
     ///   - transform: Used to transform the response into the desired value.
     public init(request: URLRequest,
-                transform: @escaping (Response) throws -> Value) {
+                transform: @escaping @Sendable (Response) throws -> Value) {
         self.init(makeRequest: { request }, transform: transform)
     }
 
@@ -42,8 +42,8 @@ public struct Resource<Value> {
     /// - Parameters:
     ///   - makeRequest: Used to create a request for this resource.
     ///   - transform: Used to transform the response into the desired value.
-    public init(makeRequest: @escaping () throws -> URLRequest,
-                transform: @escaping (Response) throws -> Value) {
+    public init(makeRequest: @escaping @Sendable () throws -> URLRequest,
+                transform: @escaping @Sendable (Response) throws -> Value) {
         self.makeRequest = makeRequest
         self.transform = transform
     }
@@ -58,7 +58,7 @@ extension Resource {
     /// of this resource as its parameter and returns a transformed value.
     /// - Returns: A resource of generic type NewValue.
     public func tryMap<NewValue>(
-        _ transform: @escaping (Value) throws -> NewValue
+        _ transform: @escaping @Sendable (Value) throws -> NewValue
     ) -> Resource<NewValue> {
 
         return Resource<NewValue>(makeRequest: makeRequest) { response in
@@ -67,7 +67,7 @@ extension Resource {
     }
 
     public func mapRequest(
-        _ modify: @escaping (URLRequest) throws -> URLRequest
+        _ modify: @escaping @Sendable (URLRequest) throws -> URLRequest
     ) -> Resource {
         return Resource(
             makeRequest: { try modify(self.makeRequest()) },
@@ -75,7 +75,7 @@ extension Resource {
     }
 
     public func modifyRequest(
-        _ modify: @escaping (inout URLRequest) throws -> ()
+        _ modify: @escaping @Sendable (inout URLRequest) throws -> ()
     ) -> Resource {
         return mapRequest { request in
             var request = request

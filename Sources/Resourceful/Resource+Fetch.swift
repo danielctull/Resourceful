@@ -19,7 +19,7 @@ extension URLSession {
     public func fetch<Value>(
         _ resource: Resource<Value>,
         callbackQueue queue: DispatchQueue = .main,
-        completion: @escaping (Result<Value, Error>) -> Void
+        completion: @escaping @Sendable (Result<Value, Error>) -> Void
     ) -> URLSessionDataTask {
 
         do {
@@ -40,7 +40,7 @@ extension URLSession {
 
     private func perform(
         request: URLRequest,
-        completion: @escaping (Result<(Data, URLResponse), URLError>) -> Void
+        completion: @escaping @Sendable (Result<(Data, URLResponse), URLError>) -> Void
     ) -> URLSessionDataTask {
 
         let task = dataTask(with: request) { data, response, error in
