@@ -18,9 +18,15 @@ extension URLSession {
     /// - Parameter resource: The resource to fetch.
     /// - Returns: The value of the resource.
     public func value<Value>(for resource: Resource<Value>) async throws -> Value {
+#if os(Linux)
         try await withUnsafeThrowingContinuation { continuation in
             fetch(resource, completion: continuation.resume)
         }
+#else
+        let request = try resource.makeRequest()
+        let response = try await data(for: request)
+        return try resource.transform(response)
+#endif
     }
 }
 
