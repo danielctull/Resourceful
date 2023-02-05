@@ -1,5 +1,5 @@
 
-import Foundation
+@preconcurrency import Foundation
 
 #if canImport(FoundationNetworking)
 import FoundationNetworking
