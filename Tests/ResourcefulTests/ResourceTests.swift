@@ -10,7 +10,7 @@ final class ResourceTests: XCTestCase {
 
     func testInit() throws {
         let resource = Resource(request: request) { _ in return "Hello" }
-        XCTAssertEqual(try resource.makeRequest(), request)
+        XCTAssertEqual(try resource.request, request)
         XCTAssertEqual(try resource.value(for: response), "Hello")
     }
 
@@ -19,13 +19,13 @@ final class ResourceTests: XCTestCase {
             .mapRequest { request in
                 URLRequest(url: request.url!.appendingPathComponent("test"))
             }
-        XCTAssertEqual(try resource.makeRequest().url, url.appendingPathComponent("test"))
+        XCTAssertEqual(try resource.request.url, url.appendingPathComponent("test"))
     }
 
     func testModifyRequest() {
         let resource = Resource(request: request) { _ in return 20 }
             .modifyRequest { $0.url?.appendPathComponent("test") }
-        XCTAssertEqual(try resource.makeRequest().url, url.appendingPathComponent("test"))
+        XCTAssertEqual(try resource.request.url, url.appendingPathComponent("test"))
     }
 
     func testTryMap() {

@@ -11,10 +11,8 @@ public struct Resource<Value> {
 
     public typealias Response = (data: Data, response: URLResponse)
 
+    private let _request: () throws -> URLRequest
     private let _success: (Response) throws -> Value
-
-    /// Makes the request for the resource.
-    public let makeRequest: () throws -> URLRequest
 
     /// Creates a resource located with the request and transformed from data
     /// using the given transform.
@@ -39,13 +37,19 @@ public struct Resource<Value> {
     ///   - transform: Used to transform the response into the desired value.
     public init(makeRequest: @escaping () throws -> URLRequest,
                 transform: @escaping (Response) throws -> Value) {
-        self.makeRequest = makeRequest
+        _request = makeRequest
         _success = transform
     }
 }
 
 extension Resource {
 
+    /// A request used to fetch the data.
+    public var request: URLRequest {
+        get throws { try _request() }
+    }
+
+    /// Transforms the network response into the desired value.
     public func value(for response: Response) throws -> Value {
         try _success(response)
     }
@@ -63,7 +67,7 @@ extension Resource {
         _ transform: @escaping (Value) throws -> NewValue
     ) -> Resource<NewValue> {
 
-        return Resource<NewValue>(makeRequest: makeRequest) { response in
+        return Resource<NewValue>(makeRequest: _request) { response in
             try transform(value(for: response))
         }
     }
@@ -72,7 +76,7 @@ extension Resource {
         _ modify: @escaping (URLRequest) throws -> URLRequest
     ) -> Resource {
         return Resource(
-            makeRequest: { try modify(self.makeRequest()) },
+            makeRequest: { try modify(self._request()) },
             transform: value(for:))
     }
 
@@ -91,11 +95,11 @@ extension Resource {
 
 extension Resource {
 
-    /// A request used to fetch the data.
-    @available(*, deprecated, message: "Use makeRequest() instead.")
-    public var request: URLRequest { return try! makeRequest() }
-
     /// Transforms the network response into the desired value.
     @available(*, deprecated, message: "Use value(for:) instead.")
     public var transform: (Response) throws -> Value { _success }
+
+    /// Makes the request for the resource.
+    @available(*, deprecated, message: "Use request instead.")
+    public var makeRequest: () throws -> URLRequest { _request }
 }

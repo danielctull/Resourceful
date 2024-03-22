@@ -23,7 +23,7 @@ extension URLSession {
     ) -> URLSessionDataTask {
 
         do {
-            let request = try resource.makeRequest()
+            let request = try resource.request
             return perform(request: request) { result in
                 let value = Result { try resource.value(for: result.get()) }
                 queue.async {

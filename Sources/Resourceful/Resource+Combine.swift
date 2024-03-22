@@ -21,7 +21,7 @@ extension URLSession {
     /// - Returns: A publisher wrapping a data task.
     public func publisher<Value>(for resource: Resource<Value>) -> AnyPublisher<Value, Error> {
 
-        Future { $0(Result { try resource.makeRequest() }) }
+        Future { $0(Result { try resource.request }) }
             .flatMap { self.dataTaskPublisher(for: $0).mapError { $0 } }
             .tryMap(resource.value)
             .eraseToAnyPublisher()
