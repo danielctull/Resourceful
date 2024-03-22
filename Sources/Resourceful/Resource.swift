@@ -11,10 +11,6 @@ public struct Resource<Value> {
 
     public typealias Response = (data: Data, response: URLResponse)
 
-    /// A request used to fetch the data.
-    @available(*, deprecated, message: "Use makeRequest() instead.")
-    public var request: URLRequest { return try! makeRequest() }
-
     /// Makes the request for the resource.
     public let makeRequest: () throws -> URLRequest
 
@@ -83,4 +79,13 @@ extension Resource {
             return request
         }
     }
+}
+
+// MARK: - Deprecations
+
+extension Resource {
+
+    /// A request used to fetch the data.
+    @available(*, deprecated, message: "Use makeRequest() instead.")
+    public var request: URLRequest { return try! makeRequest() }
 }
