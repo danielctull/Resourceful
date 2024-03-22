@@ -9,41 +9,51 @@ import FoundationNetworking
 final class ResourceTests: XCTestCase {
 
     func testInit() throws {
-        let resource = Resource(request: request) { _ in return "Hello" }
-        XCTAssertEqual(try resource.request, request)
-        XCTAssertEqual(try resource.value(for: response), "Hello")
+        let resource = try Resource(request: request) { _ in return "Hello" }
+        try XCTAssertEqual(resource.request, request)
+        try XCTAssertEqual(resource.value(for: response), "Hello")
     }
 
-    func testMapRequest() {
-        let resource = Resource(request: request) { _ in return 20 }
+    func testMapRequest() throws {
+        let resource = try Resource(request: request) { _ in return 20 }
             .mapRequest { request in
                 URLRequest(url: request.url!.appendingPathComponent("test"))
             }
-        XCTAssertEqual(try resource.request.url, url.appendingPathComponent("test"))
+        try XCTAssertEqual(try resource.request.url, url.appendingPathComponent("test"))
     }
 
-    func testModifyRequest() {
-        let resource = Resource(request: request) { _ in return 20 }
+    func testModifyRequest() throws {
+        let resource = try Resource(request: request) { _ in return 20 }
             .modifyRequest { $0.url?.appendPathComponent("test") }
-        XCTAssertEqual(try resource.request.url, url.appendingPathComponent("test"))
+        try XCTAssertEqual(resource.request.url, url.appendingPathComponent("test"))
     }
 
-    func testTryMap() {
-        let integer = Resource(request: request) { _ in return 20 }
+    func testTryMap() throws {
+        let integer = try Resource(request: request) { _ in return 20 }
         let string = integer.tryMap { String($0) }
         XCTAssertEqual(try integer.value(for: response), 20)
         XCTAssertEqual(try string.value(for: response), "20")
     }
 
-    // swiftlint:disable force_unwrapping
-    private var url: URL { return URL(string: "http://example.com")! }
-    // swiftlint:enable force_unwrapping
+    private var url: URL {
+        get throws { try XCTUnwrap(URL(string: "http://example.com")) }
+    }
 
-    private var request: URLRequest { return URLRequest(url: url) }
-    private var response: (Data, URLResponse) {
-        return (Data(), URLResponse(url: url,
-                                    mimeType: nil,
-                                    expectedContentLength: 0,
-                                    textEncodingName: nil))
+    private var request: URLRequest {
+        get throws { try URLRequest(url: url) }
+    }
+
+    private var response: Resource.Response {
+        get throws {
+            try (
+                Data(),
+                URLResponse(
+                    url: url,
+                    mimeType: nil,
+                    expectedContentLength: 0,
+                    textEncodingName: nil
+                )
+            )
+        }
     }
 }
