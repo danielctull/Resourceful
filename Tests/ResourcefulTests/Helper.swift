@@ -58,9 +58,11 @@ extension XCTestCase {
     /// - Parameter url: The location of the data.
     var failingRequestResource: Resource<String> {
         struct TestError: Error {}
-        return Resource<String>(makeRequest: { throw TestError() }, transform: {
+        return Resource<String> {
+            throw TestError()
+        } success: {
             String(data: $0.data, encoding: .utf8) ?? ""
-        })
+        }
     }
 }
 
