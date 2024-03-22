@@ -23,7 +23,7 @@ extension URLSession {
 
         Future { $0(Result { try resource.makeRequest() }) }
             .flatMap { self.dataTaskPublisher(for: $0).mapError { $0 } }
-            .tryMap(resource.transform)
+            .tryMap(resource.value)
             .eraseToAnyPublisher()
     }
 }

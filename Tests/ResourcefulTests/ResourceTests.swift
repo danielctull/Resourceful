@@ -11,7 +11,7 @@ final class ResourceTests: XCTestCase {
     func testInit() throws {
         let resource = Resource(request: request) { _ in return "Hello" }
         XCTAssertEqual(try resource.makeRequest(), request)
-        XCTAssertEqual(try resource.transform(response), "Hello")
+        XCTAssertEqual(try resource.value(for: response), "Hello")
     }
 
     func testMapRequest() {
@@ -31,8 +31,8 @@ final class ResourceTests: XCTestCase {
     func testTryMap() {
         let integer = Resource(request: request) { _ in return 20 }
         let string = integer.tryMap { String($0) }
-        XCTAssertEqual(try integer.transform(response), 20)
-        XCTAssertEqual(try string.transform(response), "20")
+        XCTAssertEqual(try integer.value(for: response), 20)
+        XCTAssertEqual(try string.value(for: response), "20")
     }
 
     // swiftlint:disable force_unwrapping

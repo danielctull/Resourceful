@@ -11,11 +11,10 @@ public struct Resource<Value> {
 
     public typealias Response = (data: Data, response: URLResponse)
 
+    private let _success: (Response) throws -> Value
+
     /// Makes the request for the resource.
     public let makeRequest: () throws -> URLRequest
-
-    /// Transforms the network response into the desired value.
-    public let transform: (Response) throws -> Value
 
     /// Creates a resource located with the request and transformed from data
     /// using the given transform.
@@ -41,7 +40,14 @@ public struct Resource<Value> {
     public init(makeRequest: @escaping () throws -> URLRequest,
                 transform: @escaping (Response) throws -> Value) {
         self.makeRequest = makeRequest
-        self.transform = transform
+        _success = transform
+    }
+}
+
+extension Resource {
+
+    public func value(for response: Response) throws -> Value {
+        try _success(response)
     }
 }
 
@@ -58,7 +64,7 @@ extension Resource {
     ) -> Resource<NewValue> {
 
         return Resource<NewValue>(makeRequest: makeRequest) { response in
-            try transform(self.transform(response))
+            try transform(value(for: response))
         }
     }
 
@@ -67,7 +73,7 @@ extension Resource {
     ) -> Resource {
         return Resource(
             makeRequest: { try modify(self.makeRequest()) },
-            transform: transform)
+            transform: value(for:))
     }
 
     public func modifyRequest(
@@ -88,4 +94,8 @@ extension Resource {
     /// A request used to fetch the data.
     @available(*, deprecated, message: "Use makeRequest() instead.")
     public var request: URLRequest { return try! makeRequest() }
+
+    /// Transforms the network response into the desired value.
+    @available(*, deprecated, message: "Use value(for:) instead.")
+    public var transform: (Response) throws -> Value { _success }
 }

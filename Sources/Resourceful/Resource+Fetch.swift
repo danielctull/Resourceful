@@ -25,7 +25,7 @@ extension URLSession {
         do {
             let request = try resource.makeRequest()
             return perform(request: request) { result in
-                let value = Result { try resource.transform(result.get()) }
+                let value = Result { try resource.value(for: result.get()) }
                 queue.async {
                     completion(value)
                 }
