@@ -1,56 +1,62 @@
 import Foundation
 import Resourceful
-import XCTest
+import Testing
 
-final class AsyncTests: XCTestCase {
+@Suite("Async tests")
+struct AsyncTests {
 
-  func testSuccess() async throws {
-    // Linux doesn't support file-based URLs that this test uses.
-    #if !os(Linux)
-      try createFile(withContents: "Hello") { url in
-        expect { completion in
-          Task.detached {
-            let value = try await URLSession.shared.value(for: self.resource(url))
-            XCTAssertEqual(value, "Hello")
-            completion()
-          }
-        }
-      }
-    #endif
+  @Test func success() async throws {
+    let value = try await URLSession.shared.value(for: .hello)
+    #expect(value == "Hello\n")
   }
 
-  func testRequestFailure() throws {
-    // Linux doesn't support file-based URLs that this test uses.
-    #if !os(Linux)
-      expect { completion in
-        Task.detached {
-          do {
-            _ = try await URLSession.shared.value(for: self.failingRequestResource)
-            XCTFail("Should cause an error.")
-          } catch {
-            completion()
-          }
-        }
-      }
-    #endif
+  @Test func `failure: make request`() async throws {
+    await #expect(throws: TestError.self) {
+      try await URLSession.shared.value(for: .makeRequestFailure)
+    }
   }
 
-  func testFailure() throws {
-    // Linux doesn't support file-based URLs that this test uses.
-    #if !os(Linux)
-      try createFile(withContents: "Hello") { base in
-        expect { completion in
-          Task.detached {
-            do {
-              let url = base.appendingPathComponent("ThisDoesNotExist")
-              _ = try await URLSession.shared.value(for: self.resource(url))
-              XCTFail("Should cause an error.")
-            } catch {
-              completion()
-            }
-          }
-        }
+  @Test func `failure: not found`() async throws {
+    await #expect(throws: Error.self) {
+      try await URLSession.shared.value(for: .notFound)
+    }
+  }
+}
+
+// MARK: Test Resources
+
+struct TestError: Error {}
+
+extension Resource<String> {
+
+  /// A resource pointing to the hello.txt file in Resources.
+  fileprivate static var hello: Resource {
+    get throws {
+      let url = try #require(Bundle.module.url(forResource: "Hello", withExtension: "txt"))
+      let request = URLRequest(url: url)
+      return Resource<String>(request: request) {
+        String(data: $0.data, encoding: .utf8) ?? ""
       }
-    #endif
+    }
+  }
+
+  /// A resource which fails to make its request.
+  fileprivate static var makeRequestFailure: Resource<String> {
+    return Resource<String> {
+      throw TestError()
+    } success: {
+      String(data: $0.data, encoding: .utf8) ?? ""
+    }
+  }
+
+  /// A resource pointing to a non-existent file.
+  fileprivate static var notFound: Resource {
+    get throws {
+      let url = Bundle.module.bundleURL.appending(component: "not_here")
+      let request = URLRequest(url: url)
+      return Resource<String>(request: request) {
+        String(data: $0.data, encoding: .utf8) ?? ""
+      }
+    }
   }
 }

@@ -23,6 +23,9 @@ let package = Package(
       name: "ResourcefulTests",
       dependencies: [
         "Resourceful"
+      ],
+      resources: [
+        .process("Resources"),
       ]
     ),
   ]
