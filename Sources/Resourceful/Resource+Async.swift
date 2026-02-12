@@ -1,13 +1,9 @@
 import Foundation
 
 #if canImport(FoundationNetworking)
-import FoundationNetworking
+  import FoundationNetworking
 #endif
 
-@available(iOS 13.0, *)
-@available(OSX 10.15, *)
-@available(tvOS 13.0, *)
-@available(watchOS 6.0, *)
 extension URLSession {
 
   /// Asynchronously retrieves the value of the resource.
