@@ -1,69 +1,69 @@
-
 import Foundation
 import Resourceful
 import XCTest
 
 #if canImport(FoundationNetworking)
-import FoundationNetworking
+  import FoundationNetworking
 #endif
 
 extension XCTestCase {
 
-    /// Work around for not having file resources in swift package manager :)
-    ///
-    /// This writes a file containing the UTF8 representation of the
-    /// string "Hello".
-    ///
-    /// - Parameter function: A function that is provided with the created file.
-    func createFile(withContents string: String, function: (URL) -> Void) throws {
+  /// Work around for not having file resources in swift package manager :)
+  ///
+  /// This writes a file containing the UTF8 representation of the
+  /// string "Hello".
+  ///
+  /// - Parameter function: A function that is provided with the created file.
+  func createFile(withContents string: String, function: (URL) -> Void) throws {
 
-        let fileManager = FileManager()
-        let cache = try fileManager.url(for: .cachesDirectory,
-                                        in: .userDomainMask,
-                                        appropriateFor: nil,
-                                        create: true)
-        let url = cache.appendingPathComponent(UUID().uuidString)
-        guard let data = string.data(using: .utf8) else {
-            struct DataError: Error {}
-            throw DataError()
-        }
-
-        try data.write(to: url)
-        function(url)
-        try fileManager.removeItem(at: url)
+    let fileManager = FileManager()
+    let cache = try fileManager.url(
+      for: .cachesDirectory,
+      in: .userDomainMask,
+      appropriateFor: nil,
+      create: true)
+    let url = cache.appendingPathComponent(UUID().uuidString)
+    guard let data = string.data(using: .utf8) else {
+      struct DataError: Error {}
+      throw DataError()
     }
 
-    /// Waits for an expectation while the function runs. The function is
-    /// provided a closure to fulfill the expectation.
-    ///
-    /// - Parameter function: The function to wait for.
-    func expect(function: (@escaping () -> Void) -> Void) {
-        let expectation = self.expectation(description: "expectation")
-        function { expectation.fulfill() }
-        wait(for: [expectation], timeout: 3)
-    }
+    try data.write(to: url)
+    function(url)
+    try fileManager.removeItem(at: url)
+  }
 
-    /// A resource pointing to the url which decodes a UTF8 string.
-    ///
-    /// - Parameter url: The location of the data.
-    func resource(_ url: URL) -> Resource<String> {
-        let request = URLRequest(url: url)
-        return Resource<String>(request: request) {
-            String(data: $0.data, encoding: .utf8) ?? ""
-        }
-    }
+  /// Waits for an expectation while the function runs. The function is
+  /// provided a closure to fulfill the expectation.
+  ///
+  /// - Parameter function: The function to wait for.
+  func expect(function: (@escaping () -> Void) -> Void) {
+    let expectation = self.expectation(description: "expectation")
+    function { expectation.fulfill() }
+    wait(for: [expectation], timeout: 3)
+  }
 
-    /// A resource which fails to make its request.
-    ///
-    /// - Parameter url: The location of the data.
-    var failingRequestResource: Resource<String> {
-        struct TestError: Error {}
-        return Resource<String> {
-            throw TestError()
-        } success: {
-            String(data: $0.data, encoding: .utf8) ?? ""
-        }
+  /// A resource pointing to the url which decodes a UTF8 string.
+  ///
+  /// - Parameter url: The location of the data.
+  func resource(_ url: URL) -> Resource<String> {
+    let request = URLRequest(url: url)
+    return Resource<String>(request: request) {
+      String(data: $0.data, encoding: .utf8) ?? ""
     }
+  }
+
+  /// A resource which fails to make its request.
+  ///
+  /// - Parameter url: The location of the data.
+  var failingRequestResource: Resource<String> {
+    struct TestError: Error {}
+    return Resource<String> {
+      throw TestError()
+    } success: {
+      String(data: $0.data, encoding: .utf8) ?? ""
+    }
+  }
 }
 
 /// Asserts that the given Result is a success.
@@ -75,17 +75,17 @@ extension XCTestCase {
 /// - Parameter line: The line number on which failure occurred. Defaults to the
 ///                   line number on which this function was called.
 func AssertSuccess<Success: Equatable, Failure>(
-    _ result: Result<Success, Failure>,
-    _ expected: Success,
-    file: StaticString = #file,
-    line: UInt = #line
+  _ result: Result<Success, Failure>,
+  _ expected: Success,
+  file: StaticString = #file,
+  line: UInt = #line
 ) {
-    switch result {
-    case .success(let success):
-        XCTAssertEqual(success, expected, file: file, line: line)
-    case .failure(let failure):
-        XCTFail("Failure: \(failure.localizedDescription)", file: file, line: line)
-    }
+  switch result {
+  case .success(let success):
+    XCTAssertEqual(success, expected, file: file, line: line)
+  case .failure(let failure):
+    XCTFail("Failure: \(failure.localizedDescription)", file: file, line: line)
+  }
 }
 
 /// Asserts that the given Result is a failure.
@@ -97,17 +97,17 @@ func AssertSuccess<Success: Equatable, Failure>(
 /// - Parameter line: The line number on which failure occurred. Defaults to the
 ///                   line number on which this function was called.
 func AssertFailure<Success, Failure: Equatable>(
-    _ result: Result<Success, Failure>,
-    _ expected: Failure,
-    file: StaticString = #file,
-    line: UInt = #line
+  _ result: Result<Success, Failure>,
+  _ expected: Failure,
+  file: StaticString = #file,
+  line: UInt = #line
 ) {
-    switch result {
-    case .success(let success):
-        XCTFail("Success: \(success)", file: file, line: line)
-    case .failure(let failure):
-        XCTAssertEqual(failure, expected, file: file, line: line)
-    }
+  switch result {
+  case .success(let success):
+    XCTFail("Success: \(success)", file: file, line: line)
+  case .failure(let failure):
+    XCTAssertEqual(failure, expected, file: file, line: line)
+  }
 }
 
 /// Asserts that the given Result is a failure.
@@ -118,14 +118,14 @@ func AssertFailure<Success, Failure: Equatable>(
 /// - Parameter line: The line number on which failure occurred. Defaults to the
 ///                   line number on which this function was called.
 func AssertFailure<Success, Failure>(
-    _ result: Result<Success, Failure>,
-    file: StaticString = #file,
-    line: UInt = #line
+  _ result: Result<Success, Failure>,
+  file: StaticString = #file,
+  line: UInt = #line
 ) {
-    switch result {
-    case .success(let success):
-        XCTFail("Success: \(success)", file: file, line: line)
-    case .failure:
-        break
-    }
+  switch result {
+  case .success(let success):
+    XCTFail("Success: \(success)", file: file, line: line)
+  case .failure:
+    break
+  }
 }

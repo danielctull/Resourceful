@@ -1,15 +1,14 @@
-
 import Foundation
 
 #if canImport(Combine)
 
-import Combine
+  import Combine
 
-@available(iOS 13.0, *)
-@available(OSX 10.15, *)
-@available(tvOS 13.0, *)
-@available(watchOS 6.0, *)
-extension URLSession {
+  @available(iOS 13.0, *)
+  @available(OSX 10.15, *)
+  @available(tvOS 13.0, *)
+  @available(watchOS 6.0, *)
+  extension URLSession {
 
     /// Returns a publisher that wraps a URL session data task for a given
     /// resource.
@@ -21,11 +20,11 @@ extension URLSession {
     /// - Returns: A publisher wrapping a data task.
     public func publisher<Value>(for resource: Resource<Value>) -> AnyPublisher<Value, Error> {
 
-        Future { $0(Result { try resource.request }) }
-            .flatMap { self.dataTaskPublisher(for: $0).mapError { $0 } }
-            .tryMap(resource.value)
-            .eraseToAnyPublisher()
+      Future { $0(Result { try resource.request }) }
+        .flatMap { self.dataTaskPublisher(for: $0).mapError { $0 } }
+        .tryMap(resource.value)
+        .eraseToAnyPublisher()
     }
-}
+  }
 
 #endif
