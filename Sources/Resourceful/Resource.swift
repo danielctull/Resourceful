@@ -97,35 +97,3 @@ extension Resource {
     }
   }
 }
-
-// MARK: - Deprecations
-
-extension Resource {
-
-  /// Transforms the network response into the desired value.
-  @available(*, deprecated, message: "Use value(for:) instead.")
-  public var transform: (Response) throws -> Value { _success }
-
-  /// Makes the request for the resource.
-  @available(*, deprecated, message: "Use request instead.")
-  public var makeRequest: () throws -> URLRequest { _request }
-
-  /// Creates a resource located with the request and transformed from data
-  /// using the given transform.
-  ///
-  /// Any failures from the makeRequest or transform functions will be
-  /// surfaced when performing the network request using the fetch or
-  /// publisher methods on URLSession.
-  ///
-  /// - Parameters:
-  ///   - makeRequest: Used to create a request for this resource.
-  ///   - transform: Used to transform the response into the desired value.
-  @available(*, deprecated, message: "Use init(request:success:) instead.")
-  public init(
-    makeRequest: @escaping () throws -> URLRequest,
-    transform: @escaping (Response) throws -> Value
-  ) {
-    _request = makeRequest
-    _success = transform
-  }
-}
