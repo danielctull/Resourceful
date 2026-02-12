@@ -23,6 +23,10 @@ extension Network {
   public func value<Value>(
     for resource: Resource<Value>
   ) async throws -> Value {
-    try await resource.value(for: fetch(resource.request))
+    do {
+      return try await resource.value(for: fetch(resource.request))
+    } catch {
+      return try resource.value(for: error)
+    }
   }
 }

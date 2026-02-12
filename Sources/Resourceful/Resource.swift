@@ -10,6 +10,7 @@ public struct Resource<Value> {
 
   private let _request: () throws -> URLRequest
   private let _success: (Data, URLResponse) throws -> Value
+  private let _failure: (any Error) throws -> Value
 
   /// Creates a resource located with the request and transformed from data
   /// using the given transform.
@@ -23,10 +24,12 @@ public struct Resource<Value> {
   ///   - success: Used to transform the response into the desired value.
   public init(
     request: @escaping () throws -> URLRequest,
-    success: @escaping (Data, URLResponse) throws -> Value
+    success: @escaping (Data, URLResponse) throws -> Value,
+    failure: @escaping (any Error) throws -> Value = { throw $0 },
   ) {
     _request = request
     _success = success
+    _failure = failure
   }
 }
 
@@ -40,9 +43,14 @@ extension Resource {
   ///   - success: Used to transform the response into the desired value.
   public init(
     request: URLRequest,
-    success: @escaping (Data, URLResponse) throws -> Value
+    success: @escaping (Data, URLResponse) throws -> Value,
+    failure: @escaping (any Error) throws -> Value = { throw $0 },
   ) {
-    self.init(request: { request }, success: success)
+    self.init(
+      request: { request },
+      success: success,
+      failure: failure,
+    )
   }
 }
 
@@ -56,6 +64,11 @@ extension Resource {
   /// Transforms the network response into the desired value.
   public func value(for response: (Data, URLResponse)) throws -> Value {
     try _success(response.0, response.1)
+  }
+
+  /// Transforms the error into the desired value.
+  public func value(for error: any Error) throws -> Value {
+    try _failure(error)
   }
 }
 

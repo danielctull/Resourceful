@@ -6,19 +6,62 @@ import Testing
 struct NetworkTests {
 
   @Test func success() async throws {
-    let value = try await Network.disk.value(for: .hello)
+    let url = try #require(Bundle.module.url(forResource: "Hello", withExtension: "txt"))
+    let request = URLRequest(url: url)
+    let resource = Resource(request: request, success: String.init)
+    let value = try await Network.disk.value(for: resource)
     #expect(value == "Hello\n")
   }
 
   @Test func `failure: make request`() async throws {
+
+    struct TestError: Error {}
+
+    let resource = Resource(
+      request: { throw TestError() },
+      success: String.init
+    )
+
     await #expect(throws: TestError.self) {
-      try await Network.disk.value(for: .makeRequestFailure)
+      try await Network.disk.value(for: resource)
     }
   }
 
-  @Test func `failure: not found`() async throws {
-    await #expect(throws: Error.self) {
-      try await Network.disk.value(for: .notFound)
+  @Test func `failure: network`() async throws {
+    let failing = Network { _ in throw TestError() }
+    let url = try #require(Bundle.module.url(forResource: "Hello", withExtension: "txt"))
+    let request = URLRequest(url: url)
+    let resource = Resource(request: request, success: String.init)
+    await #expect(throws: TestError.self) {
+      try await failing.value(for: resource)
+    }
+  }
+
+  @Test func `failure: recover`() async throws {
+    let failing = Network { _ in throw TestError() }
+    let url = try #require(Bundle.module.url(forResource: "Hello", withExtension: "txt"))
+    let request = URLRequest(url: url)
+    let resource = Resource(
+      request: request,
+      success: String.init,
+      failure: { "\(type(of: $0))" }
+    )
+    let value = try await failing.value(for: resource)
+    #expect(value == "TestError")
+  }
+
+  @Test func `failure: rethrow`() async throws {
+    struct NewError: Error {}
+    let failing = Network { _ in throw TestError() }
+    let url = try #require(Bundle.module.url(forResource: "Hello", withExtension: "txt"))
+    let request = URLRequest(url: url)
+    let resource = Resource(
+      request: request,
+      success: String.init,
+      failure: { _ in throw NewError() }
+    )
+    await #expect(throws: NewError.self) {
+      try await failing.value(for: resource)
     }
   }
 }
@@ -41,40 +84,10 @@ extension Network {
 #endif
 }
 
-// MARK: Test Resources
+fileprivate struct TestError: Error {}
 
-struct TestError: Error {}
-
-extension Resource<String> {
-
-  /// A resource pointing to the hello.txt file in Resources.
-  fileprivate static var hello: Resource {
-    get throws {
-      let url = try #require(Bundle.module.url(forResource: "Hello", withExtension: "txt"))
-      let request = URLRequest(url: url)
-      return Resource<String>(request: request) { data, _ in
-        String(decoding: data, as: UTF8.self)
-      }
-    }
-  }
-
-  /// A resource which fails to make its request.
-  fileprivate static var makeRequestFailure: Resource<String> {
-    return Resource<String> {
-      throw TestError()
-    } success: { data, _ in
-      String(decoding: data, as: UTF8.self)
-    }
-  }
-
-  /// A resource pointing to a non-existent file.
-  fileprivate static var notFound: Resource {
-    get throws {
-      let url = Bundle.module.bundleURL.appending(component: "not_here")
-      let request = URLRequest(url: url)
-      return Resource<String>(request: request) { data, _ in
-        String(decoding: data, as: UTF8.self)
-      }
-    }
+extension String {
+  fileprivate init(data: Data, response: URLResponse) {
+    self.init(decoding: data, as: UTF8.self)
   }
 }
