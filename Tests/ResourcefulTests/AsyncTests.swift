@@ -34,8 +34,8 @@ extension Resource<String> {
     get throws {
       let url = try #require(Bundle.module.url(forResource: "Hello", withExtension: "txt"))
       let request = URLRequest(url: url)
-      return Resource<String>(request: request) {
-        String(data: $0.data, encoding: .utf8) ?? ""
+      return Resource<String>(request: request) { data, _ in
+        String(decoding: data, as: UTF8.self)
       }
     }
   }
@@ -44,8 +44,8 @@ extension Resource<String> {
   fileprivate static var makeRequestFailure: Resource<String> {
     return Resource<String> {
       throw TestError()
-    } success: {
-      String(data: $0.data, encoding: .utf8) ?? ""
+    } success: { data, _ in
+      String(decoding: data, as: UTF8.self)
     }
   }
 
@@ -54,8 +54,8 @@ extension Resource<String> {
     get throws {
       let url = Bundle.module.bundleURL.appending(component: "not_here")
       let request = URLRequest(url: url)
-      return Resource<String>(request: request) {
-        String(data: $0.data, encoding: .utf8) ?? ""
+      return Resource<String>(request: request) { data, _ in
+        String(decoding: data, as: UTF8.self)
       }
     }
   }

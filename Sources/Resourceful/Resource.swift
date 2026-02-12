@@ -8,10 +8,8 @@ import Foundation
 /// transformed with the given transform function.
 public struct Resource<Value> {
 
-  public typealias Response = (data: Data, response: URLResponse)
-
   private let _request: () throws -> URLRequest
-  private let _success: (Response) throws -> Value
+  private let _success: (Data, URLResponse) throws -> Value
 
   /// Creates a resource located with the request and transformed from data
   /// using the given transform.
@@ -25,7 +23,7 @@ public struct Resource<Value> {
   ///   - success: Used to transform the response into the desired value.
   public init(
     request: @escaping () throws -> URLRequest,
-    success: @escaping (Response) throws -> Value
+    success: @escaping (Data, URLResponse) throws -> Value
   ) {
     _request = request
     _success = success
@@ -42,7 +40,7 @@ extension Resource {
   ///   - success: Used to transform the response into the desired value.
   public init(
     request: URLRequest,
-    success: @escaping (Response) throws -> Value
+    success: @escaping (Data, URLResponse) throws -> Value
   ) {
     self.init(request: { request }, success: success)
   }
@@ -56,8 +54,8 @@ extension Resource {
   }
 
   /// Transforms the network response into the desired value.
-  public func value(for response: Response) throws -> Value {
-    try _success(response)
+  public func value(for response: (Data, URLResponse)) throws -> Value {
+    try _success(response.0, response.1)
   }
 }
 
@@ -73,8 +71,8 @@ extension Resource {
     _ transform: @escaping (Value) throws -> NewValue
   ) -> Resource<NewValue> {
 
-    Resource<NewValue>(request: _request) { response in
-      try transform(value(for: response))
+    Resource<NewValue>(request: _request) { data, response in
+      try transform(_success(data, response))
     }
   }
 

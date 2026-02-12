@@ -10,13 +10,13 @@ import Testing
 struct ResourceTests {
 
   @Test func initialiser() throws {
-    let resource = try Resource(request: request) { _ in return "Hello" }
+    let resource = try Resource(request: request) { _, _ in return "Hello" }
     #expect(try resource.request == request)
     #expect(try resource.value(for: response) == "Hello")
   }
 
   @Test func testMapRequest() throws {
-    let resource = try Resource(request: request) { _ in return 20 }
+    let resource = try Resource(request: request) { _, _ in return 20 }
       .mapRequest { request in
         URLRequest(url: request.url!.appendingPathComponent("test"))
       }
@@ -24,14 +24,14 @@ struct ResourceTests {
   }
 
   @Test func testModifyRequest() throws {
-    let resource = try Resource(request: request) { _ in return 20 }
+    let resource = try Resource(request: request) { _, _ in return 20 }
       .modifyRequest { $0.url?.appendPathComponent("test") }
 
     #expect(try resource.request.url == url.appendingPathComponent("test"))
   }
 
   @Test func testTryMap() throws {
-    let integer = try Resource(request: request) { _ in return 20 }
+    let integer = try Resource(request: request) { _, _ in return 20 }
     let string = integer.tryMap { String($0) }
     #expect(try integer.value(for: response) == 20)
     #expect(try string.value(for: response) == "20")
@@ -48,7 +48,7 @@ private var request: URLRequest {
   get throws { try URLRequest(url: url) }
 }
 
-private var response: Resource.Response {
+private var response: (Data, URLResponse) {
   get throws {
     try (
       Data(),
