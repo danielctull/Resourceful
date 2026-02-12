@@ -25,6 +25,9 @@ extension Network {
   ) async throws -> Value {
     do {
       return try await resource.value(for: fetch(resource.request))
+    } catch let recover as Recover {
+      try await recover(with: self)
+      return try await resource.value(for: fetch(resource.request))
     } catch {
       return try resource.value(for: error)
     }
